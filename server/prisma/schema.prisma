@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client"
+  // I removed the 'output' line. 
+  // keeping it default allows you to import from '@prisma/client' easily.
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  role         Role     @default(REQUESTER)
+  postedJobs   Job[]    @relation("PostedJobs")
+  acceptedJobs Job[]    @relation("AcceptedJobs")
+  messages    Message[]  @relation("UserMessages") 
+}
+
+model Job {
+  id          String    @id @default(uuid())
+  title       String
+  description String?   @default("") // Added description field based on our typeDefs
+  price       Float
+  status      JobStatus @default(OPEN)
+  requesterId String
+  providerId  String?
+  requester   User      @relation("PostedJobs", fields: [requesterId], references: [id])
+  provider    User?     @relation("AcceptedJobs", fields: [providerId], references: [id])
+  createdAt   DateTime  @default(now())
+  messages    Message[]  @relation("JobMessages")
+}
+
+enum Role {
+  REQUESTER
+  PROVIDER
+}
+
+enum JobStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+}
+
+
+model Message {
+  id        String   @id @default(uuid())
+  text      String
+  createdAt DateTime @default(now())
+  
+  // Relations
+  jobId     String
+  job       Job      @relation("JobMessages", fields: [jobId], references: [id])
+  
+  senderId  String
+  sender    User     @relation("UserMessages", fields: [senderId], references: [id])
+}
