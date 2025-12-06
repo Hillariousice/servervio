@@ -1,29 +1,29 @@
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
-import { typeDefs } from './schema'; // Your GraphQL Schema string
-import { resolvers } from './resolvers'; // Your JS Logic
-import { PrismaClient } from '@prisma/client';
+import { typeDefs } from './schema';
+import { resolvers } from './resolvers';
+import { connectDB } from './db';
+import dotenv from 'dotenv';
 
-const prisma = new PrismaClient();
+dotenv.config();
 
-const startServer = async () => {
-  const app = express();
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: ({ req }) => ({
-      req,
-      prisma, // Inject Prisma into every resolver
-      userId: req.headers.authorization // Simple auth check
-    }),
-  });
+const app = express();
+const port = process.env.PORT || 4000;
 
+async function startServer() {
+  await connectDB();
+  const server = new ApolloServer({ typeDefs, resolvers });
   await server.start();
   server.applyMiddleware({ app });
 
-  app.listen(4000, () => {
-    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  app.get('/', (req, res) => {
+    res.send('Hello World!');
   });
-};
+
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+    console.log(`GraphQL endpoint: http://localhost:${port}${server.graphqlPath}`);
+  });
+}
 
 startServer();

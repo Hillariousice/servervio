@@ -1,18 +1,11 @@
 {
   "compilerOptions": {
-    /* Base Options */
-    "target": "es2020",                /* Set to a modern version of JS */
-    "module": "commonjs",              /* Crucial: Compiles 'import' to 'require' for Node */
-    "moduleResolution": "node",        /* Standard Node resolution */
-    "esModuleInterop": true,           /* Allows importing CommonJS modules like they are ES modules */
-    "verbatimModuleSyntax": false,     /* <--- SET THIS TO FALSE to fix your specific error */
-    "forceConsistentCasingInFileNames": true,
+    "target": "es6",
+    "module": "esnext",
     "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-
-    /* Project Structure */
-    "outDir": "./dist",                /* Where compiled JS goes */
-    "rootDir": "./src"                 /* Where your TS files are */
-  },
-  "include": ["src/**/*"]
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node"
+  }
 }
